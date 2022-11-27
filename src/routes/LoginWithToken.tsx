@@ -2,7 +2,7 @@ import React, { useCallback, useContext, useState } from 'react';
 import { Form, FormRenderProps } from 'react-final-form';
 import { ArrowLeftIcon } from '@primer/octicons-react';
 import { useHistory } from 'react-router-dom';
-import { shell } from 'electron';
+import { open } from '@tauri-apps/api/shell';
 
 import { AppContext } from '../context/App';
 import { AuthTokenOptions } from '../types';
@@ -46,7 +46,7 @@ export const LoginWithToken: React.FC = () => {
   const [isValidToken, setIsValidToken] = useState<boolean>(true);
 
   const openLink = useCallback((url: string) => {
-    shell.openExternal(url);
+    open(url);
   }, []);
 
   const renderForm = (formProps: FormRenderProps) => {

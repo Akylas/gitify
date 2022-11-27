@@ -27,38 +27,7 @@ window.localStorage = {
 
 window.alert = jest.fn();
 
-const browserWindow = {
-  loadURL: jest.fn(),
-  webContents: {
-    on: () => {},
-    session: {
-      clearStorageData: jest.fn(),
-    },
-  },
-  on: () => {},
-  close: jest.fn(),
-  hide: jest.fn(),
-  destroy: jest.fn(),
-};
-
-const dialog = {
-  showErrorBox: jest.fn(),
-};
-
 module.exports = {
-  remote: {
-    BrowserWindow: () => browserWindow,
-    dialog: dialog,
-    process: {
-      platform: 'darwin',
-    },
-    app: {
-      getVersion: () => '0.0.1',
-      getLoginItemSettings: jest.fn(),
-      setLoginItemSettings: () => {},
-    },
-    getCurrentWindow: jest.fn(() => browserWindow),
-  },
   ipcRenderer: {
     send: jest.fn(),
     on: jest.fn(),

@@ -1,0 +1,64 @@
+{
+  "package": {
+    "productName": "gitify",
+    "version": "1.0.6"
+  },
+  "build": {
+    "distDir": "../build",
+    "devPath": "http://localhost:3000",
+    "beforeDevCommand": "npm run dev:web",
+    "beforeBuildCommand": "npm run build:web"
+  },
+  "tauri": {
+    "systemTray": {
+      "iconPath": "./icons/tray-idleTemplate.png",
+      "iconAsTemplate": true,
+      "menuOnLeftClick": false
+    },
+    "bundle": {
+      "active": true,
+      "targets": "all",
+      "identifier": "com.akylas.gitify",
+      "icon": [
+        "icons/app-icon.icns",
+        "icons/app-icon.icon",
+        "icons/stockman.png"
+      ],
+      "resources": [],
+      "externalBin": [],
+      "copyright": "",
+      "category": "DeveloperTool",
+      "shortDescription": "",
+      "longDescription": "",
+      "deb": {
+        "depends": []
+      },
+      "macOS": {
+        "frameworks": [],
+        "exceptionDomain": "",
+        "signingIdentity": null,
+        "providerShortName": null,
+        "entitlements": null
+      },
+      "windows": {
+        "certificateThumbprint": null,
+        "digestAlgorithm": "sha256",
+        "timestampUrl": ""
+      }
+    },
+    "allowlist": {
+      "all": true,
+      "http": {
+        "all": true,
+        "request": true,
+        "scope": [
+          "https://api.github.com/*",
+          "https://github.com/*"
+        ]
+      }
+    },
+    "security": {
+      "csp": null
+    }
+  }
+}

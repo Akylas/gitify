@@ -1,14 +1,17 @@
 import axios, { AxiosPromise, Method } from 'axios';
+import axiosTauriApiAdapter from 'axios-tauri-api-adapter';
 
 export function apiRequest(
   url: string,
   method: Method,
   data = {}
 ): AxiosPromise {
-  axios.defaults.headers.common['Accept'] = 'application/json';
-  axios.defaults.headers.common['Content-Type'] = 'application/json';
-  axios.defaults.headers.common['Cache-Control'] = 'no-cache';
-  return axios({ method, url, data });
+  const client = axios.create({ adapter: axiosTauriApiAdapter, headers:{
+    'Accept':'application/json',
+    'Content-Type':'application/json',
+    'Cache-Control': 'no-cache'
+  } });
+  return client({ method, url, data });
 }
 
 export function apiRequestAuth(
@@ -17,9 +20,11 @@ export function apiRequestAuth(
   token: string,
   data = {}
 ): AxiosPromise {
-  axios.defaults.headers.common['Accept'] = 'application/json';
-  axios.defaults.headers.common['Authorization'] = `token ${token}`;
-  axios.defaults.headers.common['Cache-Control'] = 'no-cache';
-  axios.defaults.headers.common['Content-Type'] = 'application/json';
-  return axios({ method, url, data });
+  const client = axios.create({ adapter: axiosTauriApiAdapter, headers:{
+    'Authorization':`token ${token}`,
+    'Accept':'application/json',
+    'Content-Type':'application/json',
+    'Cache-Control': 'no-cache'
+  } });
+  return client({ method, url, data });
 }

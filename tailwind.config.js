@@ -1,5 +1,10 @@
+const plugin = require('tailwindcss/plugin')
+
 module.exports = {
-  purge: ['./src/**/*.js', './src/**/*.ts', './src/**/*.tsx'],
+  content: [
+    "./index.html",
+    "./src/**/*.{vue,js,ts,jsx,tsx}",
+  ],
   darkMode: 'class',
   theme: {
     extend: {
@@ -18,8 +23,25 @@ module.exports = {
       },
     },
   },
-  variants: {
-    extend: {},
-  },
-  plugins: [],
-};
+  plugins: [
+    require('flowbite/plugin'),
+    plugin(function ({ addUtilities }) {
+      addUtilities({
+        '.scrollbar-hide': {
+          '&::-webkit-scrollbar': {
+            display: 'none',
+          }
+        },
+        '.top-84px': {
+          top: '84px'
+        },
+        '.bottom-52px': {
+          bottom: '52px'
+        },
+        '.blur-mini': {
+          filter: 'blur(2px)'
+        },
+      })
+    })
+  ],
+}

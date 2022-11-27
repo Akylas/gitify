@@ -1,4 +1,4 @@
-const ipcRenderer = require('electron').ipcRenderer;
+// const ipcRenderer = require('electron').ipcRenderer;
 
 import React, { useCallback, useContext, useEffect } from 'react';
 import { Form, FormRenderProps } from 'react-final-form';
@@ -59,7 +59,7 @@ export const LoginEnterpriseRoute: React.FC = () => {
 
   useEffect(() => {
     if (enterpriseAccounts.length) {
-      ipcRenderer.send('reopen-window');
+      // ipcRenderer.send('reopen-window');
       history.goBack();
     }
   }, [enterpriseAccounts]);

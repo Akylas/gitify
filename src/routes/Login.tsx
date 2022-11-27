@@ -1,4 +1,4 @@
-const { ipcRenderer } = require('electron');
+// const { ipcRenderer } = require('electron');
 
 import React, { useCallback, useContext, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
@@ -12,15 +12,16 @@ export const LoginRoute: React.FC = () => {
 
   useEffect(() => {
     if (isLoggedIn) {
-      ipcRenderer.send('reopen-window');
+      // ipcRenderer.send('reopen-window');
       history.replace('/');
     }
   }, [isLoggedIn]);
 
   const loginUser = useCallback(async () => {
     try {
-      await login();
+      await login?.();
     } catch (err) {
+      console.log('login error', err)
       // Skip
     }
   }, []);
@@ -44,7 +45,7 @@ export const LoginRoute: React.FC = () => {
         Login to GitHub
       </button>
 
-      <button
+      {/* <button
         className={loginButtonClass}
         onClick={() => history.push('/login-enterprise')}
         aria-label="Login with GitHub Enterprise"
@@ -58,7 +59,7 @@ export const LoginRoute: React.FC = () => {
         aria-label="Login with Personal Token"
       >
         <small>or login with a personal token</small>
-      </button>
+      </button> */}
     </div>
   );
 };

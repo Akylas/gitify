@@ -1,10 +1,12 @@
-const { remote } = require('electron');
 
-import { generateGitHubWebUrl } from './helpers';
-import { reOpenWindow, openExternalLink, updateTrayIcon } from './comms';
-import { Notification, User } from '../typesGithub';
+import { openInBrowser } from '../utils/helpers';
+import { reOpenWindow, updateTrayIcon } from './comms';
+import type { Notification } from '../typesGithub';
+import { appWindow } from '@tauri-apps/api/window';
 
-import { AccountNotifications, SettingsState } from '../types';
+import { AccountNotifications, SettingsState, AuthState } from '../types';
+
+let markNotification: (accounts: AuthState, id: string, hostname?: string) => Promise<void>;
 
 export const setTrayIconColor = (notifications: AccountNotifications[]) => {
   const allNotificationsCount = notifications.reduce(
@@ -19,16 +21,20 @@ export const triggerNativeNotifications = (
   previousNotifications: AccountNotifications[],
   newNotifications: AccountNotifications[],
   settings: SettingsState,
-  user: User
+  accounts: AuthState,
+  markNotification_?: (accounts: AuthState, id: string, hostname?: string) => Promise<void>
 ) => {
-  const diffNotifications = newNotifications
+  //@ts-ignore
+  markNotification ??= markNotification_;
+
+  const diff = newNotifications
     .map((account) => {
       const accountPreviousNotifications = previousNotifications.find(
         (item) => item.hostname === account.hostname
       );
 
       if (!accountPreviousNotifications) {
-        return account.notifications;
+        return { hostname: account.hostname, notifications: account.notifications };
       }
 
       const accountPreviousNotificationsIds = accountPreviousNotifications.notifications.map(
@@ -39,9 +45,10 @@ export const triggerNativeNotifications = (
         return !accountPreviousNotificationsIds.includes(`${item.id}`);
       });
 
-      return accountNewNotifications;
+      return { hostname: account.hostname, notifications: accountNewNotifications };
     })
-    .reduce((acc, val) => acc.concat(val), []);
+
+  const diffNotifications = diff.flatMap(o => o.notifications)
 
   setTrayIconColor(newNotifications);
 
@@ -55,23 +62,23 @@ export const triggerNativeNotifications = (
   }
 
   if (settings.showNotifications) {
-    raiseNativeNotification(diffNotifications, user?.id);
+    raiseNativeNotification(diffNotifications, settings, accounts, diff[0].hostname);
   }
 };
 
 export const raiseNativeNotification = (
   notifications: Notification[],
-  userId?: number
+  settings: SettingsState,
+  accounts: AuthState,
+  hostname?: string
 ) => {
   let title: string;
   let body: string;
-  let notificationUrl: string | null;
 
   if (notifications.length === 1) {
     const notification = notifications[0];
-    title = `Gitify - ${notification.repository.full_name}`;
+    title = `${process.platform !== 'win32' ? 'Gitify - ' : ''}${notification.repository.full_name}`;
     body = notification.subject.title;
-    notificationUrl = notification.subject.url;
   } else {
     title = 'Gitify';
     body = `You have ${notifications.length} notifications.`;
@@ -84,14 +91,10 @@ export const raiseNativeNotification = (
 
   nativeNotification.onclick = function () {
     if (notifications.length === 1) {
-      const appWindow = remote.getCurrentWindow();
       appWindow.hide();
-
-      // Some Notification types from GitHub are missing urls in their subjects.
-      if (notificationUrl) {
-        const { subject, id } = notifications[0];
-        const url = generateGitHubWebUrl(subject.url, id, userId);
-        openExternalLink(url);
+      openInBrowser(notifications[0], accounts);
+      if (settings.markOnClick) {
+        markNotification?.(accounts, notifications[0].id, hostname);
       }
     } else {
       reOpenWindow();

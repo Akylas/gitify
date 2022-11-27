@@ -1,4 +1,3 @@
-const { shell } = require('electron');
 
 import React, { useCallback, useContext } from 'react';
 import { CheckIcon } from '@primer/octicons-react';
@@ -7,6 +6,7 @@ import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { AppContext } from '../context/App';
 import { Notification } from '../typesGithub';
 import { NotificationRow } from './NotificationRow';
+import { open } from '@tauri-apps/api/shell';
 
 interface IProps {
   hostname: string;
@@ -23,7 +23,7 @@ export const RepositoryNotifications: React.FC<IProps> = ({
 
   const openBrowser = useCallback(() => {
     const url = repoNotifications[0].repository.html_url;
-    shell.openExternal(url);
+    open(url);
   }, [repoNotifications]);
 
   const markRepoAsRead = useCallback(() => {

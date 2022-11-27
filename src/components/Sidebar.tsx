@@ -1,5 +1,4 @@
 import React, { useCallback, useContext, useMemo } from 'react';
-import { shell, ipcRenderer } from 'electron';
 import * as Octicons from '@primer/octicons-react';
 import { useHistory } from 'react-router-dom';
 
@@ -9,6 +8,7 @@ import { IconCog } from '../icons/Cog';
 import { IconRefresh } from '../icons/Refresh';
 import { Logo } from '../components/Logo';
 import { IconQuit } from '../icons/Quit';
+import { open } from '@tauri-apps/api/shell';
 
 export const Sidebar: React.FC = () => {
   const history = useHistory();
@@ -17,15 +17,15 @@ export const Sidebar: React.FC = () => {
   const { notifications, fetchNotifications } = useContext(AppContext);
 
   const onOpenBrowser = useCallback(() => {
-    shell.openExternal(`https://github.com/${Constants.REPO_SLUG}`);
+    open(`https://github.com/${Constants.REPO_SLUG}`);
   }, []);
 
   const onOpenGitHubNotifications = useCallback(() => {
-    shell.openExternal(`https://github.com/notifications`);
+    open(`https://github.com/notifications`);
   }, []);
 
   const quitApp = useCallback(() => {
-    ipcRenderer.send('app-quit');
+    // ipcRenderer.send('app-quit');
   }, []);
 
   const notificationsCount = useMemo(() => {
