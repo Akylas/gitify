@@ -22,10 +22,7 @@ export function generateNotificationReferrerId(
   notificationId: string,
   userId: number
 ) {
-  const buffer = Buffer.from(
-    `018:NotificationThread${notificationId}:${userId}`
-  );
-  return `notification_referrer_id=${buffer.toString('base64')}`;
+  return `notification_referrer_id=${window.btoa(`018:NotificationThread${notificationId}:${userId}`)}`;
 }
 
 export function generateGitHubWebUrl(

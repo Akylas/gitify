@@ -107,7 +107,8 @@ export const useNotifications = (): NotificationsState => {
             setIsFetching(false);
           })
         )
-        .catch(() => {
+        .catch((err) => {
+          console.error(err)
           setIsFetching(false);
           setRequestFailed(true);
         });

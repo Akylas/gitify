@@ -3,8 +3,10 @@ import { openInBrowser } from '../utils/helpers';
 import { reOpenWindow, updateTrayIcon } from './comms';
 import type { Notification } from '../typesGithub';
 import { appWindow } from '@tauri-apps/api/window';
+import { platform } from '@tauri-apps/api/os';
 
 import { AccountNotifications, SettingsState, AuthState } from '../types';
+
 
 let markNotification: (accounts: AuthState, id: string, hostname?: string) => Promise<void>;
 
@@ -66,7 +68,7 @@ export const triggerNativeNotifications = (
   }
 };
 
-export const raiseNativeNotification = (
+export const raiseNativeNotification = async (
   notifications: Notification[],
   settings: SettingsState,
   accounts: AuthState,
@@ -77,7 +79,7 @@ export const raiseNativeNotification = (
 
   if (notifications.length === 1) {
     const notification = notifications[0];
-    title = `${process.platform !== 'win32' ? 'Gitify - ' : ''}${notification.repository.full_name}`;
+    title = `${(await platform()) !== 'win32' ? 'Gitify - ' : ''}${notification.repository.full_name}`;
     body = notification.subject.title;
   } else {
     title = 'Gitify';

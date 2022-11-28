@@ -10,8 +10,6 @@ use tauri::{
 use tauri_plugin_positioner::{on_tray_event, Position, WindowExt};
 use tauri_plugin_store::PluginBuilder;
 
-mod menu;
-
 #[tauri::command]
 async fn login(window: tauri::Window) -> String {
     let window_ = window.clone();
@@ -117,42 +115,9 @@ fn main() {
         })
         .invoke_handler(tauri::generate_handler![login, update_tray_icon])
         .system_tray(system_tray)
-        .on_system_tray_event(|app, event| match event {
-            SystemTrayEvent::LeftClick {
-                position: _,
-                size: _,
-                ..
-            } => {
-                println!("left cllick");
-                let window = app.get_window("main").unwrap();
-                window.show().unwrap();
-                window.set_focus().unwrap();
-            }
-            SystemTrayEvent::MenuItemClick { id, .. } => {
-                let item_handle = app.tray_handle().get_item(&id);
-                match id.as_str() {
-                    "toggle" => {
-                        // Todo
-                    }
-                    "quit" => {
-                        std::process::exit(0);
-                    }
-                    "hide" => {
-                        let window = app.get_window("main").unwrap();
-                        let new_title = if window.is_visible().unwrap() {
-                            window.hide().unwrap();
-                            "Show"
-                        } else {
-                            window.show().unwrap();
-                            "Hide"
-                        };
-                        item_handle.set_title(new_title).unwrap();
-                    }
-                    _ => {}
-                }
-            }
-            _ => {}
-        })
+        .on_system_tray_event(|app, event| {
+            tauri_plugin_positioner::on_tray_event(app, &event);
+         })
         .on_window_event(|event| match event.event() {
             WindowEvent::Focused(f) if !f => {
                 let window = event.window().get_window("main").unwrap();
@@ -176,26 +141,9 @@ fn main() {
                 } => {
                     toggle_window(app);
                 }
-                /* SystemTrayEvent::RightClick {
-                  position: _,
-                  size: _,
-                  ..
-                } => {
-                  println!("system tray received a right click");
-                } */
-                /* SystemTrayEvent::DoubleClick {
-                  position: _,
-                  size: _,
-                  ..
-                } => {
-                  println!("system tray received a double click");
-                } */
                 SystemTrayEvent::MenuItemClick { id, .. } => {
-                    // let item_handle = app.tray_handle().get_item(&id);
                     match id.as_str() {
                         "quit" => {
-                            // std::process::exit(0);
-                            //the below command can also be used (taken from example code)
                             app.exit(0);
                         }
                         "toggle" => {
