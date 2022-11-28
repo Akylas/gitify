@@ -9,6 +9,7 @@ lerna-debug.log*
 yarn.lock
 
 node_modules
+build
 dist
 dist-ssr
 *.local
@@ -18,6 +19,7 @@ dist-ssr
 !.vscode/extensions.json
 .idea
 .DS_Store
+.yarn
 *.suo
 *.ntvs*
 *.njsproj
